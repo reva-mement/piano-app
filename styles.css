@@ -262,31 +262,42 @@ body::before {
   box-shadow: 0 0 15px rgba(255, 218, 68, 0.7);
 }
 
-/* ===== パネル・インポートボタン周り：レイアウト干渉防止版 ===== */
+/* ===== パネル・インポートボタン周り：レイアウト干渉防止・完全修正版 ===== */
 
-/* ★この数字を書き換えることで、全体の最大幅を自由に調整できます */
 :root {
-  --midi-max-width: 200px; 
+  /* 曲名が鍵盤を覆い尽くさないよう、幅を適切に制限 */
+  --midi-max-width: 220px; 
 }
 
 #midi-import-wrapper {
   position: absolute;
-  top: 90px;
-  right: -35px; /* 干渉を防ぐため少し内側に寄せましたが、お好みで調整してください */
+  top: 100px;    /* アプリバーの下に配置 */
+  right: 10px;   /* 画面右端から少し離す */
   z-index: 9999;
   display: flex;
   flex-direction: column;
-  align-items: flex-end; /* 子要素を右揃えにする */
+  align-items: flex-end;
+
+  /* ★超重要：ラッパー自体はクリックを透過させ、下の鍵盤を触れるようにする */
+  pointer-events: none; 
+}
+
+#midi-import-button,
+#current-midi-title,
+#midi-playlist {
+  /* ★重要：子要素（ボタンやリスト）だけはクリックに反応させる */
+  pointer-events: auto;
 }
 
 #midi-import-button {
-  min-width: 100px;
+  min-width: 120px;
   height: 45px;
   padding: 0 15px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  /* メタリック質感維持 */
   background: linear-gradient(180deg, #ffffff 0%, #e0e0e0 40%, #f8f8f8 50%, #b0b0b0 100%);
   border: 1px solid #a0a0a0;
   border-radius: 8px;
@@ -308,7 +319,7 @@ body::before {
 #current-midi-title {
   margin-top: 10px;
   padding: 5px 10px;
-  background: rgba(255,255,255,0.1);
+  background: rgba(40, 40, 40, 0.8); /* 少し不透明度を上げて視認性確保 */
   border: 1px solid #555;
   font-size: 12px;
   color: #ddd;
@@ -316,26 +327,38 @@ body::before {
   border-radius: 4px;
   min-height: 18px;
   
-  /* --- 省略表示のための重要プロパティ --- */
-  max-width: var(--midi-max-width); /* 変数で幅を指定 */
-  white-space: nowrap;             /* 改行を禁止 */
-  overflow: hidden;                /* はみ出しを隠す */
-  text-overflow: ellipsis;         /* 末尾を ... にする */
+  max-width: var(--midi-max-width);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
-/* プレイリスト内のファイル名も同様に制限 */
+/* プレイリスト：鍵盤を隠しすぎないよう調整 */
 #midi-playlist {
   margin-top: 10px;
   list-style: none;
   padding: 0;
-  max-height: 150px;
+  max-height: 200px; /* リストが長くなってもOK */
   overflow-y: auto;
-  background: rgba(0,0,0,0.3);
+  background: rgba(20, 20, 20, 0.9);
+  border: 1px solid #444;
   border-radius: 4px;
   font-size: 11px;
-  width: 100%;
-  max-width: var(--midi-max-width);
+  width: var(--midi-max-width);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.5);
 }
+
+/* プレイリスト内のアイテムも省略表示に対応 */
+#midi-playlist li {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 8px;
+  border-bottom: 1px solid #333;
+}
+
+/* 以下、設定・パネル・終了ボタンの記述は既存のものを維持してください */
 
 .view { display: none; }
 .view.active { display: block; }
