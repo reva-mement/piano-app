@@ -1,0 +1,246 @@
+/* ==========================================
+   UIパーツ専用スタイル (ui.css) - Refactored
+   ========================================== */
+
+/* --- ブランド・共通 --- */
+.app-bar {
+    position: absolute;
+    top: 0; left: 0; padding: 25px; z-index: 300;
+}
+
+.brand {
+    font-family: var(--font-brand);
+    font-size: 28px;
+    color: #ffffff;
+    font-style: italic;
+    text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.5);
+    letter-spacing: 1px;
+    pointer-events: auto;
+}
+
+.blackboard-container {
+    position: fixed;
+    z-index: 100;
+    left: 25px; bottom: 350px;
+    width: 350px; height: 350px;
+    background-image: url('../assets/blackboard.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    pointer-events: none;
+}
+
+/* --- モードセレクター (タグ) --- */
+.control-panel-container {
+    position: absolute;
+    left: 50%; top: 30%;
+    transform: translate(-50%, -50%);
+    width: 100vw;
+    z-index: 100;
+    pointer-events: none;
+    display: flex;
+    justify-content: center;
+}
+
+.mode-selector-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0; 
+}
+
+.mode-tag {
+    position: relative;
+    pointer-events: auto;
+    transition: all 0.1s ease;
+    backface-visibility: hidden;
+}
+
+.mode-tag img {
+    display: block;
+    width: 100%; height: 100%;
+    object-fit: fill;
+    mix-blend-mode: multiply;
+}
+
+/* 個別配置（維持） */
+#tag-perform { width: 700px; height: 200px; margin-left: 120px; }
+#tag-studio  { width: 650px; height: 150px; margin-top: -50px; margin-left: 140px; }
+#tag-session { width: 660px; height: 170px; margin-top: -50px; margin-left: 140px; }
+
+/* タブ状態変化 */
+.mode-tag:not(.active) { filter: brightness(0.7) grayscale(0.2); opacity: 0.9; }
+.mode-tag.active { filter: brightness(1.1); transform: scale(1.02); z-index: 10; }
+.mode-tag:hover { filter: brightness(1.2); }
+
+/* --- 刻印ラベル共通 --- */
+.mode-tag::before {
+    position: absolute;
+    z-index: 5;
+    font-family: var(--font-serif);
+    font-weight: 900; 
+    color: var(--color-wood-dark);
+    white-space: nowrap;
+    pointer-events: none; 
+    transition: all 0.2s ease;
+    text-shadow: var(--shadow-stamp);
+}
+
+#tag-perform::before { content: "Perform Mode"; top: 60px; left: 105px; font-size: 20px; }
+#tag-studio::before  { content: "Studio Mode"; top: 37px; left: 60px; font-size: 19px; }
+#tag-session::before { content: "Session Mode"; top: 50px; left: 70px; font-size: 17px; }
+
+/* --- 【STUDIO】刻印ボタン（配置情報のみ） --- */
+#tag-studio .play-stamp,
+#tag-studio .stop-stamp {
+    position: absolute;
+    min-width: 90px;
+    z-index: 100;
+}
+
+/* 個別の位置調整（維持） */
+#tag-studio .play-stamp  { top: 75px; left: 65px; }
+#tag-studio .stop-stamp  { top: 77.5px; left: 165px; }
+
+/* GUIDE PLAY ON時のスタイル（ランプ演出） */
+#tag-studio .guide-stamp.active {
+    background: var(--color-gold-glow) !important;
+    box-shadow: 0 0 10px var(--color-gold-glow), var(--shadow-inset-soft) !important;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.6) !important;
+}
+
+.mode-tag:not(.active) .play-stamp,
+.mode-tag:not(.active) .stop-stamp {
+    opacity: 0.6;
+}
+
+/* --- プレイリストアイコンの配置 --- */
+.playlist-icon-wrapper {
+    position: absolute;
+    top: -170px; /* イーゼルの少し上に配置 */
+    right: 110px;
+    width: 150px; /* アイコンのサイズ（適宜調整してください） */
+    cursor: pointer;
+    pointer-events: auto;
+    transition: transform 0.2s ease, filter 0.2s ease;
+    z-index: 110;
+}
+
+.playlist-icon-wrapper img {
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(4px 4px 8px rgba(0,0,0,0.5));
+}
+
+.playlist-icon-wrapper:hover {
+    transform: scale(1.1); /* 少し傾いて浮き上がる */
+    filter: brightness(1.2);
+}
+
+/* --- 右側イーゼル --- */
+.midi-station-container {
+    position: absolute;
+    right: -60px; 
+    top: 50%; 
+    transform: translateY(-50%);
+    z-index: 100; 
+    pointer-events: none;
+}
+
+.playlist-easel {
+    display: inline-block;
+    position: relative; 
+    width: 450px;
+    cursor: pointer; 
+    pointer-events: auto;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.2s ease;
+}
+
+.playlist-easel img { 
+    width: 100%; 
+    height: auto;
+    display: block;
+    filter: drop-shadow(12px 12px 25px rgba(0, 0, 0, 0.6)); 
+}
+.playlist-easel:hover { transform: scale(1.03) translateY(-5px); filter: brightness(1.15); }
+
+/* --- アンティーク・ボリューム・フェーダー --- */
+#antique-volume-fader {
+    position: fixed; left: 40px; bottom: 305px;
+    display: flex; align-items: center; 
+    background: rgba(42, 27, 12, 0.8);
+    padding: 5px 15px; border-radius: 8px; 
+    border: 2px solid var(--color-wood-frame);
+    box-shadow: 4px 4px 15px rgba(0,0,0,0.6); 
+    z-index: 100; gap: 10px;
+}
+.fader-label { color: var(--color-gold-bright); font-family: 'Georgia', serif; font-size: 10px; }
+#master-volume { -webkit-appearance: none; width: 150px; background: transparent; cursor: pointer; }
+#master-volume::-webkit-slider-runnable-track { width: 100%; height: 6px; background: #1a1a1a; border-radius: 3px; }
+#master-volume::-webkit-slider-thumb {
+    -webkit-appearance: none; height: 24px; width: 12px;
+    background: linear-gradient(145deg, var(--color-gold-bright), #8b5a2b);
+    border-radius: 2px; margin-top: -9px; border: 1px solid var(--color-wood-frame);
+}
+/* --- ボリューム/BPM数字表示エリアの修正 --- */
+.volume-display { 
+    background-color: #1a1a1a; 
+    border: 1px solid var(--color-wood-frame); 
+    padding: 2px 0; /* 左右の余白をリセット */
+    min-width: 45px; /* 少し幅を広げて数字がゆったり入るように調整 */
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    box-sizing: border-box;
+}
+
+#volume-input, #bpm-input { 
+    background: transparent; 
+    border: none; 
+    color: #ff9d00; 
+    font-family: var(--font-mono); 
+    font-weight: bold; 
+    width: 100%; 
+    text-align: center; 
+    outline: none; 
+    margin: 0; 
+    padding: 0; 
+    line-height: 1; /* 行の高さを1にして垂直中央を安定させる */
+    appearance: textfield; /* ブラウザ標準の上下矢印を消す（スッキリさせるため） */
+}
+
+/* Chrome/Safariなどの入力欄の矢印を非表示に */
+#volume-input::-webkit-inner-spin-button,
+#volume-input::-webkit-outer-spin-button,
+#bpm-input::-webkit-inner-spin-button,
+#bpm-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* --- Studioモード専用：垂直スタック --- */
+.studio-stacked-btns {
+    position: absolute;
+    top: 46px; left: 265px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 100;
+}
+
+/* 共通パーツの display/padding を活かしつつ位置を固定 */
+.record-stamp, .guide-stamp {
+    font-size: 10px !important;
+    height: 28px !important;
+    min-width: 100px !important;
+}
+
+#studio-song-display {
+    position: absolute;
+    top: 77.5px; left: 375px;
+    width: 200px; height: 28px;
+    padding: 4px 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

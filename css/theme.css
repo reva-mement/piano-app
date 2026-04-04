@@ -1,0 +1,31 @@
+/* ==========================================
+   PianoWorks Theme Definition (theme.css)
+   ========================================== */
+
+:root {
+    /* --- Colors: Wood & Ink (木材とインク) --- */
+    --color-wood-dark: #1a1005;            /* 焦げ茶・インク色 */
+    --color-wood-frame: #3e2712;           /* 枠組みの木材 */
+    --color-wood-gradient-start: rgba(50, 35, 25, 0.98);
+    --color-wood-gradient-end: rgba(25, 15, 10, 0.99);
+
+    /* --- Colors: Gold & Brass (金と真鍮) --- */
+    --color-gold-antique: rgba(210, 180, 140, 0.95); /* くすんだ金 */
+    --color-gold-bright: #d4af37;                    /* 明るい金 */
+    --color-gold-glow: rgba(212, 175, 55, 0.4);
+    
+    /* --- Colors: Accent (アクセント) --- */
+    --color-accent-red: rgba(180, 40, 80, 0.95);     /* ホバー時の赤 */
+
+    /* --- Fonts --- */
+    --font-brand: 'Lobster', cursive;
+    --font-serif: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+    --font-mono: 'Courier New', Courier, monospace;
+
+    /* --- Shared Effects (共通エフェクト) --- */
+    --shadow-stamp: -1px -1px 0px rgba(0, 0, 0, 0.9), 
+                    1px 1px 0px rgba(255, 255, 255, 0.5);
+    --shadow-inset-soft: inset 1px 1px 2px rgba(0, 0, 0, 0.7);
+    --shadow-inset-deep: inset 3px 3px 6px rgba(0, 0, 0, 0.9);
+    --blur-modal: blur(4px);
+}

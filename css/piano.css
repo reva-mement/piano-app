@@ -1,0 +1,222 @@
+/* ==========================================
+   1. ピアノ全体の構造 (Outer Shell)
+   ========================================== */
+#view-piano {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 280px; 
+    z-index: 10;
+    background-color: transparent;
+    display: flex;
+    flex-direction: column;
+    border: none;
+}
+
+#piano-viewport {
+    flex: 1;
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    position: relative;
+    background-color: rgba(0, 0, 0, 0.8);
+    border-top: 2px solid #333;
+    scrollbar-width: none; /* Firefox用：スクロールバー非表示 */
+}
+#piano-viewport::-webkit-scrollbar {
+    display: none; /* Chrome/Safari用：スクロールバー非表示 */
+}
+
+.piano-keyboard {
+    display: flex;
+    height: 100%;
+    align-items: flex-start;
+    padding: 0 10px;
+    position: relative; 
+}
+
+/* ==========================================
+   2. ミニマップ (Minimap)
+   ========================================== */
+.piano-minimap-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 15px 0;
+    background: transparent; 
+}
+
+.minimap-base {
+    width: 16vw;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+    position: relative;
+}
+
+.minimap-viewport-frame {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 4px;
+    pointer-events: none;
+}
+
+/* ==========================================
+   3. 鍵盤とラベルの基本設定 (Key Basics)
+   ========================================== */
+.key {
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+    flex-shrink: 0;
+    transition: transform 0.05s, background-color 0.1s;
+    overflow: visible;
+}
+
+/* 打鍵時の光レイヤー */
+.key::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    opacity: 0;
+    transition: opacity 0.1s;
+    pointer-events: none;
+    z-index: 5;
+}
+
+/* 音名ラベル */
+.key-label {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 14px;
+    font-weight: 900;
+    pointer-events: none;
+    z-index: 10;
+    transition: all 0.1s ease;
+    text-align: center;
+    width: 100%;
+}
+
+/* --- 白鍵 --- */
+.key.white {
+    width: 4.7619vw; 
+    height: 220px;
+    background: linear-gradient(180deg, #fff 0%, #eee 100%);
+    border: 1px solid #ccc;
+    border-radius: 0 0 6px 6px;
+    z-index: 1;
+}
+.key.white .key-label {
+    color: rgba(0, 0, 0, 0.6);
+}
+
+/* --- 黒鍵 --- */
+.key.black {
+    width: 2.8vw; 
+    height: 140px;
+    background: linear-gradient(180deg, #333 0%, #000 100%);
+    z-index: 2;
+    margin-left: -1.4vw; 
+    margin-right: -1.4vw;
+    border-radius: 0 0 4px 4px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+}
+.key.black .key-label {
+    color: #fff;
+    bottom: 8px;
+    text-shadow: 0 0 2px rgba(0,0,0,0.8);
+}
+
+/* ==========================================
+   4. 通常時の演奏エフェクト (Active Effects)
+   ========================================== */
+.key.active { 
+    transform: translateY(6px); 
+}
+
+.key.active::after {
+    background: linear-gradient(to bottom, rgba(0, 120, 212, 0.8) 0%, transparent 100%);
+    opacity: 1;
+}
+
+.key.active .key-label {
+    color: #0078d4 !important;
+    transform: translateX(-50%) scale(1.2);
+    text-shadow: 0 0 5px rgba(255,255,255,0.8);
+}
+
+/* ==========================================
+   5. Liveモード演出 (Wireframe & Neon)
+   ========================================== */
+
+/* 全体・ビューポート */
+#view-piano.is-live {
+    background-color: transparent !important;
+    border-top: none !important;
+    box-shadow: none !important;
+    transition: all 0.8s ease-in-out;
+}
+#view-piano.is-live #piano-viewport {
+    background-color: transparent !important;
+    border-top: none !important;
+    transition: all 0.8s ease-in-out;
+}
+
+/* ワイヤーフレーム化（白鍵・黒鍵） */
+#view-piano.is-live .key.white {
+    background: transparent !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    transition: all 0.6s ease-out;
+}
+#view-piano.is-live .key.black {
+    background: transparent !important;
+    border: 1px solid rgba(0, 255, 255, 0.5) !important;
+    box-shadow: none !important;
+    transition: all 0.6s ease-out;
+}
+
+/* Liveモード用ラベルカラー */
+#view-piano.is-live .key.white .key-label {
+    color: rgba(0, 255, 255, 0.6) !important;
+}
+#view-piano.is-live .key.black .key-label {
+    color: rgba(0, 255, 255, 0.8) !important;
+}
+
+/* Liveモード時の打鍵エフェクト（ネオン） */
+#view-piano.is-live .key.active {
+    transform: translateY(2px);
+    border-color: rgba(0, 255, 255, 1) !important;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.8) !important;
+    transition: all 0.1s ease;
+}
+#view-piano.is-live .key.active .key-label {
+    color: #fff !important;
+    text-shadow: 0 0 5px #00ffff;
+}
+#view-piano.is-live .key.active::after {
+    display: none !important;
+}
+
+/* Liveモード時のミニマップ */
+#view-piano.is-live .piano-minimap-container {
+    background: transparent !important;
+    border: none !important;
+}
+#view-piano.is-live .minimap-base {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+#view-piano.is-live .minimap-viewport-frame {
+    background: rgba(0, 255, 255, 0.1) !important;
+    border: 1px solid rgba(0, 255, 255, 0.8) !important;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5) !important;
+}

@@ -1,0 +1,194 @@
+/* ==========================================
+   1. 基本設定 & 背景レイヤー (style.css)
+   ========================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #000;
+}
+
+#video-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0; 
+    background-image: url('../assets/copilot_image_1774523714927.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: block !important;
+}
+
+#ui-layer {
+    position: relative;
+    z-index: 5; 
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+/* ==========================================
+   2. ピアノ演奏エリア
+   ========================================== */
+#view-piano {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    height: 40vh;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    pointer-events: none;
+    background: #000; 
+}
+
+#view-piano * {
+    pointer-events: auto;
+}
+
+#piano-viewport {
+    flex: 1;
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    background: #000;
+}
+
+.piano-keyboard {
+    height: 100%;
+    display: flex;
+}
+
+/* ==========================================
+   3. モード別 UI 設定 (Perform/Studio)
+   ========================================== */
+
+.perform-controls {
+    position: absolute;
+    top: 100px; 
+    left: 100px;
+    display: flex;
+    align-items: center;
+    gap: 20px; 
+    pointer-events: auto;
+}
+
+.yt-import-group {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* ボタンの位置とサイズのみ定義（装飾はcomponents.cssへ） */
+.perform-play-btn, .yt-import-btn {
+    /* 装飾は .btn-stamp-gold が担当するため、ここでは配置のみ */
+}
+
+/* URL表示エリアの位置定義 */
+.yt-url-display {
+    font-size: 11px;
+    padding: 5px 12px;
+    width: 220px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* Studioガイド演出（演出用なのでここに残す） */
+.key.guide-active {
+    background-color: var(--color-gold-bright) !important;
+    box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.7); 
+}
+
+#tag-studio .play-stamp.paused {
+    background-color: var(--color-gold-bright) !important;
+    color: #000 !important;
+}
+
+.perform-btn-group {
+    display: flex;
+    gap: 10px;
+}
+
+/* --- モーダル (構造のみ) --- */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    backdrop-filter: var(--blur-modal);
+}
+
+.modal-content-wrapper {
+    min-width: 480px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    position: relative;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.modal-title-stamp {
+    font-size: 13px;
+    font-weight: bold;
+    color: rgba(210, 180, 140, 0.6);
+    text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.9), 1px 1px 1px rgba(255, 255, 255, 0.05);
+    letter-spacing: 3px;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.modal-input-wrapper {
+    /* 質感は .display-sunken 的な要素が必要な場合 components に頼る */
+    border-radius: 2px;
+    padding: 2px;
+}
+
+.modal-text-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: rgba(210, 180, 140, 0.9);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    padding: 12px 15px;
+}
+
+.modal-close-btn {
+    position: absolute;
+    bottom: 15px;
+    right: 20px;
+    font-size: 10px;
+    color: rgba(210, 180, 140, 0.4);
+    cursor: pointer;
+    letter-spacing: 1px;
+}
+
+/* --- Studioモード専用：配置のみ --- */
+.studio-stacked-btns {
+    position: absolute;
+    top: 60px;
+    left: 265px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    z-index: 100;
+}
