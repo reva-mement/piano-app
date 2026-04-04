@@ -12,6 +12,7 @@ window.isPlaying = false;
 window.isGuideMode = false;
 
 document.addEventListener('DOMContentLoaded', async () => {
+    // 1. まずは確実に表示される UI を初期化
     try {
         await initPiano();
         console.log("PianoWorks: Piano UI Rendered.");
@@ -20,11 +21,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     videoPlayerElement = document.getElementById('local-video-player');
     initCommonUI(); 
 
+    // 2. 機能ごとの初期化を個別にラップする
+    // こうすることで、万が一どれか一つが失敗しても、他が動くようになります
+    
     // Studioモード初期化
-    await initStudioMode(() => loadedMidiData);  
-    setupPerformSession();
-});
+    try {
+        await initStudioMode(() => loadedMidiData); 
+    } catch (e) { console.error("Studio mode init failed:", e); }
 
+    // Performモード初期化 (安全対策済み)
+    try {
+        setupPerformSession();
+    } catch (e) { console.error("Perform session setup failed:", e); }
+
+    // プレイリスト(Lottie)初期化
+    try {
+        initPlaylistLottie();
+    } catch (e) { console.error("Playlist Lottie init failed:", e); }
+});
 // 1. 共通UI（ボリューム・MIDI読み込み）
 function initCommonUI() {
     const vSlider = document.getElementById('master-volume');
@@ -135,7 +149,6 @@ function closePlaylistWithAnim() {
 }
 
 // 3. 実行とイベント登録（組み立て）
-initPlaylistLottie();
 
 if (playlistIconBtn) {
     playlistIconBtn.addEventListener('click', () => {
