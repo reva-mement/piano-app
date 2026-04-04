@@ -1,10 +1,21 @@
 // 1. インポートを先頭にまとめる
 import { extractVideoId, showModal } from '../utils.js';
 
-// --- 安全装置：Tauri環境かどうかを確認 ---
-// ブラウザ版では window.__TAURI__ が存在しないため、エラーにならないように取得
-const isTauri = !!window.__TAURI__;
-const WebviewWindow = isTauri ? window.__TAURI__.webviewWindow.WebviewWindow : null;
+/**
+ * 安全に WebviewWindow クラスを取得するヘルパー関数
+ * 読み込み時ではなく、ボタンが押された際などに実行することでエラーを回避します
+ */
+function getTauriWebviewWindow() {
+    try {
+        // window.__TAURI__ が存在するか、その先に目的のクラスがあるかを段階的にチェック
+        if (window && window.__TAURI__ && window.__TAURI__.webviewWindow) {
+            return window.__TAURI__.webviewWindow.WebviewWindow;
+        }
+    } catch (e) {
+        console.warn("Tauri API is not available in this environment.");
+    }
+    return null;
+}
 
 let videoWindow = null;
 let pianoOverlayWindow = null;
@@ -46,7 +57,6 @@ export function setupPerformSession() {
                         display.textContent = url;
                         console.log("URL updated via Custom Modal.");
                     } else {
-                        // alertの代わりにブラウザでも動く簡易表示、またはshowModalを再度利用
                         console.warn("Invalid URL");
                     }
                 }
@@ -69,16 +79,17 @@ async function handlePerformStart(url) {
                 </button>
             </div>
         `;
-        showModal(alertHtml, () => {
-            console.log("Alert closed");
-        });
+        showModal(alertHtml);
         return;
     }
 
     const btn = document.getElementById('video-play-btn');
+    
+    // --- 実行時に Tauri API を取得（超安全ガード） ---
+    const WebviewWindow = getTauriWebviewWindow();
 
     // --- ブラウザ環境（GitHub Pages等）での動作制限 ---
-    if (!isTauri || !WebviewWindow) {
+    if (!WebviewWindow) {
         console.log("Web Mode: Perform session (Multi-window) is only available in Desktop App.");
         const webNoticeHtml = `
             <div style="text-align: center; padding: 10px;">
@@ -94,45 +105,54 @@ async function handlePerformStart(url) {
     const videoId = extractVideoId(url);
 
     if (videoWindow) {
-        await videoWindow.close();
-        if (pianoOverlayWindow) await pianoOverlayWindow.close();
+        try {
+            await videoWindow.close();
+            if (pianoOverlayWindow) await pianoOverlayWindow.close();
+        } catch (e) {
+            console.error("Window close error:", e);
+        }
         videoWindow = null;
         pianoOverlayWindow = null;
         if (btn) btn.textContent = "▶ PLAY";
         return;
     }
 
-    videoWindow = new WebviewWindow('video-player', {
-        url: `https://www.youtube.com/watch?v=${videoId}`,
-        title: 'PianoWorks - Performing',
-        fullscreen: true,
-        alwaysOnTop: true,
-    });
+    try {
+        videoWindow = new WebviewWindow('video-player', {
+            url: `https://www.youtube.com/watch?v=${videoId}`,
+            title: 'PianoWorks - Performing',
+            fullscreen: true,
+            alwaysOnTop: true,
+        });
 
-    pianoOverlayWindow = new WebviewWindow('piano-overlay', {
-        url: 'keyboard-overlay.html',
-        width: 1300,
-        height: 350,
-        x: 0,
-        y: 450,
-        transparent: true,
-        decorations: false,
-        alwaysOnTop: true,
-    });
+        pianoOverlayWindow = new WebviewWindow('piano-overlay', {
+            url: 'keyboard-overlay.html',
+            width: 1300,
+            height: 350,
+            x: 0,
+            y: 450,
+            transparent: true,
+            decorations: false,
+            alwaysOnTop: true,
+        });
 
-    setTimeout(async () => {
-        if (pianoOverlayWindow) {
-            await pianoOverlayWindow.setAlwaysOnTop(true);
-            await pianoOverlayWindow.setFocus();
-        }
-    }, 500);
+        setTimeout(async () => {
+            if (pianoOverlayWindow && pianoOverlayWindow.setAlwaysOnTop) {
+                await pianoOverlayWindow.setAlwaysOnTop(true);
+                await pianoOverlayWindow.setFocus();
+            }
+        }, 500);
 
-    videoWindow.once('tauri://close-requested', async () => {
-        if (pianoOverlayWindow) await pianoOverlayWindow.close();
-        videoWindow = null;
-        pianoOverlayWindow = null;
-        if (btn) btn.textContent = "▶ PLAY";
-    });
+        videoWindow.once('tauri://close-requested', async () => {
+            if (pianoOverlayWindow) await pianoOverlayWindow.close();
+            videoWindow = null;
+            pianoOverlayWindow = null;
+            if (btn) btn.textContent = "▶ PLAY";
+        });
 
-    if (btn) btn.textContent = "Ⅱ PAUSE";
+        if (btn) btn.textContent = "Ⅱ PAUSE";
+
+    } catch (err) {
+        console.error("Tauri window creation failed:", err);
+    }
 }
